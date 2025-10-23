@@ -27,6 +27,8 @@
           :key="teacher.id"
           :teacher="teacher"
           @view="viewTeacherDetails"
+          @edit="editTeacher"
+          @delete="confirmDeleteTeacher"
       />
     </div>
 
@@ -41,6 +43,23 @@
       <AddTeacherFormComponent
           @save="handleAddTeacher"
           @cancel="showAddDialog = false"
+      />
+    </pv-dialog>
+
+    <pv-dialog
+        v-model:visible="showEditDialog"
+        header="Edit Teacher"
+        :modal="true"
+        :closable="true"
+        :style="{ width: '90vw', maxWidth: '950px' }"
+        :draggable="false"
+    >
+      <AddTeacherFormComponent
+          v-if="selectedTeacher"
+          :teacher="selectedTeacher"
+          :is-edit="true"
+          @save="handleEditTeacher"
+          @cancel="showEditDialog = false"
       />
     </pv-dialog>
 
@@ -84,6 +103,35 @@
       </template>
     </pv-dialog>
 
+    <pv-dialog
+        v-model:visible="showDeleteDialog"
+        header="Confirm Deletion"
+        :modal="true"
+        :closable="true"
+        :style="{ width: '450px' }"
+        :draggable="false"
+    >
+      <div class="delete-confirmation">
+        <i class="pi pi-exclamation-triangle" style="font-size: 3rem; color: #f59e0b;"></i>
+        <p>Are you sure you want to delete teacher <strong>{{ teacherToDelete?.firstName }} {{ teacherToDelete?.lastName }}</strong>?</p>
+        <p class="warning-text">This action cannot be undone.</p>
+      </div>
+      <template #footer>
+        <pv-button
+            label="Cancel"
+            icon="pi pi-times"
+            @click="showDeleteDialog = false"
+            severity="secondary"
+        />
+        <pv-button
+            label="Delete"
+            icon="pi pi-trash"
+            @click="handleDeleteTeacher"
+            severity="danger"
+        />
+      </template>
+    </pv-dialog>
+
     <pv-toast />
   </div>
 </template>
@@ -105,7 +153,10 @@ export default {
       teachers: [],
       selectedTeacher: null,
       showAddDialog: false,
+      showEditDialog: false,
       showDetailsDialog: false,
+      showDeleteDialog: false,
+      teacherToDelete: null,
       loading: false,
     };
   },
@@ -162,6 +213,74 @@ export default {
           severity: 'error',
           summary: 'Error',
           detail: error.message || 'Failed to load teacher details',
+          life: 4000
+        });
+      }
+    },
+
+    async editTeacher(teacherId) {
+      try {
+        this.selectedTeacher = await TeacherService.fetchTeacherById(teacherId);
+        this.showEditDialog = true;
+      } catch (error) {
+        this.$toast.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: error.message || 'Failed to load teacher details',
+          life: 4000
+        });
+      }
+    },
+
+    async handleEditTeacher(teacherData) {
+      try {
+        await TeacherService.updateTeacher(this.selectedTeacher.id, teacherData);
+        this.$toast.add({
+          severity: 'success',
+          summary: 'Success',
+          detail: 'Teacher updated successfully',
+          life: 3000
+        });
+        this.showEditDialog = false;
+        this.selectedTeacher = null;
+        await this.loadTeachers();
+      } catch (error) {
+        this.$toast.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: error.message || 'Failed to update teacher',
+          life: 4000
+        });
+      }
+    },
+
+    confirmDeleteTeacher(teacherId) {
+      const teacher = this.teachers.find(t => t.id === teacherId);
+      if (teacher) {
+        this.teacherToDelete = teacher;
+        this.showDeleteDialog = true;
+      }
+    },
+
+    async handleDeleteTeacher() {
+      if (!this.teacherToDelete) return;
+
+      try {
+        await TeacherService.deleteTeacher(this.teacherToDelete.id);
+        this.$toast.add({
+          severity: 'success',
+          summary: 'Success',
+          detail: 'Teacher deleted successfully',
+          life: 3000
+        });
+        this.showDeleteDialog = false;
+        this.teacherToDelete = null;
+        await this.loadTeachers();
+      } catch (error) {
+        this.$toast.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: error.message || 'Failed to delete teacher',
           life: 4000
         });
       }
@@ -294,5 +413,26 @@ export default {
   .teacher-grid {
     grid-template-columns: 1fr;
   }
+}
+
+.delete-confirmation {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  text-align: center;
+  padding: 1rem 0;
+}
+
+.delete-confirmation p {
+  margin: 0;
+  font-size: 1rem;
+  color: #2c3e50;
+}
+
+.warning-text {
+  color: #dc2626 !important;
+  font-size: 0.9rem !important;
+  font-weight: 500;
 }
 </style>

@@ -86,7 +86,7 @@
       </div>
     </div>
 
-    <div class="form-section">
+    <div class="form-section" v-if="!isEdit">
       <h3 class="section-title">Account Credentials</h3>
 
       <div class="form-row">
@@ -120,7 +120,7 @@
           type="button"
       />
       <pv-button
-          label="Save Teacher"
+          :label="isEdit ? 'Update Teacher' : 'Save Teacher'"
           icon="pi pi-check"
           type="submit"
       />
@@ -133,6 +133,16 @@ import { mapGetters } from "vuex";
 
 export default {
   name: "add-teacher-form",
+  props: {
+    teacher: {
+      type: Object,
+      default: null
+    },
+    isEdit: {
+      type: Boolean,
+      default: false
+    }
+  },
   data() {
     return {
       formData: {
@@ -152,6 +162,21 @@ export default {
         phone: "",
       },
     };
+  },
+  mounted() {
+    if (this.isEdit && this.teacher) {
+      this.formData = {
+        firstName: this.teacher.firstName || "",
+        lastName: this.teacher.lastName || "",
+        email: this.teacher.email || "",
+        dni: this.teacher.dni || "",
+        address: this.teacher.address || "",
+        phone: this.teacher.phone || "",
+        administratorId: this.teacher.administratorId || this.userId,
+        username: "",
+        password: "",
+      };
+    }
   },
   computed: {
     ...mapGetters("user", ["userId"]),
@@ -198,16 +223,10 @@ export default {
       }
     },
     isFormValid() {
-      const requiredFields = [
-        "firstName",
-        "lastName",
-        "email",
-        "username",
-        "password",
-        "dni",
-        "phone",
-        "address",
-      ];
+      const requiredFields = this.isEdit
+        ? ["firstName", "lastName", "email", "dni", "phone", "address"]
+        : ["firstName", "lastName", "email", "username", "password", "dni", "phone", "address"];
+
       const hasAllRequiredFields = requiredFields.every(
           (field) => this.formData[field]
       );

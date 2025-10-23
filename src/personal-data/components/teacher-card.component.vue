@@ -57,10 +57,24 @@
       <div class="card-actions">
         <pv-button
             icon="pi pi-eye"
-            label="View Details"
+            label="View"
             severity="info"
             size="small"
             @click="$emit('view', teacher.id)"
+        />
+        <pv-button
+            icon="pi pi-pencil"
+            label="Edit"
+            severity="warning"
+            size="small"
+            @click="$emit('edit', teacher.id)"
+        />
+        <pv-button
+            icon="pi pi-trash"
+            label="Delete"
+            severity="danger"
+            size="small"
+            @click="$emit('delete', teacher.id)"
         />
       </div>
     </template>
@@ -184,6 +198,8 @@ export default {
 .card-actions {
   display: flex;
   justify-content: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
 }
 
 /* Compact view styles */
