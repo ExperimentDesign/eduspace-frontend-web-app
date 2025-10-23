@@ -8,7 +8,8 @@ export default {
   props: {
     events: { type: Array, required: true },
     areaId: { type: Number, required: true },
-    userId: { type: Number, required: true }
+    userId: { type: Number, required: true },
+    selectedSpace: { type: Object, default: null }
   },
   computed: {
     calendarOptions() {
@@ -43,10 +44,10 @@ export default {
           startTime: '07:00',
           endTime: '20:00'
         },
-        locale: 'es',
+        locale: 'en',
         buttonText: {
-          today: 'Hoy',
-          week: 'Semana'
+          today: 'Today',
+          week: 'Week'
         },
         slotLabelFormat: {
           hour: '2-digit',
@@ -78,7 +79,7 @@ export default {
 
     handleEventClick(clickInfo) {
       const event = clickInfo.event;
-      alert(`Reserva: ${event.title}\nInicio: ${event.start.toLocaleString('es-ES')}\nFin: ${event.end.toLocaleString('es-ES')}`);
+      alert(`Reservation: ${event.title}\nStart: ${event.start.toLocaleString('en-US')}\nEnd: ${event.end.toLocaleString('en-US')}`);
     },
 
     handleEvents(events) {
@@ -89,17 +90,27 @@ export default {
 </script>
 
 <template>
-  <div class='calendar-container'>
-    <div class='calendar-wrapper'>
+  <div class='calendar-wrapper'>
+    <div v-if="selectedSpace" class="calendar-header">
+      <div class="header-icon">
+        <i class="pi pi-building"></i>
+      </div>
+      <div class="header-content">
+        <h3>{{ selectedSpace.name }}</h3>
+        <p>Viewing reservations for this space</p>
+      </div>
+    </div>
+
+    <div class='calendar-container'>
       <fc-calendar
-          class='enhanced-calendar'
+          class='modern-calendar'
           :options='calendarOptions'
       >
         <template v-slot:eventContent='arg'>
           <div class="event-content">
             <div class="event-time">
               <i class="pi pi-clock"></i>
-              {{ arg.timeText }}
+              <span>{{ arg.timeText }}</span>
             </div>
             <div class="event-title">{{ arg.event.title }}</div>
           </div>
@@ -110,175 +121,252 @@ export default {
 </template>
 
 <style scoped>
+.calendar-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.calendar-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, rgba(5, 150, 105, 0.02) 100%);
+  border-radius: 12px;
+  border: 2px solid #10b981;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.1);
+}
+
+.header-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  color: white;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 2;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}
+
+.header-content h3 {
+  margin: 0 0 0.25rem 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.header-content p {
+  margin: 0;
+  font-size: 0.875rem;
+  color: #6c757d;
+}
+
 .calendar-container {
   background: #ffffff;
   border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  border: 1px solid #e9ecef;
+  padding: 1.25rem;
   overflow: hidden;
 }
 
-.calendar-wrapper {
-  padding: 1.5rem;
-}
-
-.enhanced-calendar {
+.modern-calendar {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 }
 
-/* Header styling */
-.enhanced-calendar :deep(.fc-toolbar) {
-  padding: 1rem;
-  background: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 100%);
-  border-radius: 8px;
-  margin-bottom: 1.5rem;
+/* Toolbar */
+.modern-calendar :deep(.fc-toolbar) {
+  padding: 0.75rem 0.5rem;
+  margin-bottom: 1.25rem;
+  background: transparent;
+  border-radius: 0;
+  border-bottom: 1px solid #e9ecef;
 }
 
-.enhanced-calendar :deep(.fc-toolbar-title) {
-  color: #00838f;
-  font-size: 1.5rem;
+.modern-calendar :deep(.fc-toolbar-title) {
+  color: #2c3e50;
+  font-size: 1.25rem;
   font-weight: 600;
 }
 
-.enhanced-calendar :deep(.fc-button) {
-  background: white;
-  border: 1px solid #00bcd4;
-  color: #00838f;
+.modern-calendar :deep(.fc-button) {
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  color: #495057;
   border-radius: 6px;
-  padding: 0.5rem 1rem;
+  padding: 0.5rem 0.85rem;
   font-weight: 500;
-  transition: all 0.3s ease;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
 }
 
-.enhanced-calendar :deep(.fc-button:hover) {
-  background: #00bcd4;
-  border-color: #00bcd4;
+.modern-calendar :deep(.fc-button:hover) {
+  background: #10b981;
+  border-color: #10b981;
   color: white;
-  transform: translateY(-1px);
 }
 
-.enhanced-calendar :deep(.fc-button-active) {
-  background: #00acc1 !important;
-  border-color: #00acc1 !important;
+.modern-calendar :deep(.fc-button-active) {
+  background: #10b981 !important;
+  border-color: #10b981 !important;
   color: white !important;
 }
 
-/* Column headers */
-.enhanced-calendar :deep(.fc-col-header-cell) {
+.modern-calendar :deep(.fc-button:focus) {
+  box-shadow: none;
+}
+
+/* Column Headers */
+.modern-calendar :deep(.fc-col-header-cell) {
   background: #f8f9fa;
-  border-color: #e9ecef;
-  padding: 1rem 0.5rem;
+  border-color: #dee2e6;
+  padding: 0.75rem 0.5rem;
   font-weight: 600;
   color: #495057;
 }
 
-.enhanced-calendar :deep(.fc-col-header-cell-cushion) {
+.modern-calendar :deep(.fc-col-header-cell-cushion) {
   color: #495057;
   text-transform: uppercase;
   font-size: 0.75rem;
   letter-spacing: 0.5px;
+  font-weight: 600;
 }
 
-/* Time slots */
-.enhanced-calendar :deep(.fc-timegrid-slot) {
-  height: 3rem;
+/* Time Slots */
+.modern-calendar :deep(.fc-timegrid-slot) {
+  height: 2.5rem;
   border-color: #e9ecef;
 }
 
-.enhanced-calendar :deep(.fc-timegrid-slot-label) {
+.modern-calendar :deep(.fc-timegrid-slot-label) {
   color: #6c757d;
-  font-size: 0.875rem;
+  font-size: 0.8rem;
+  font-weight: 500;
 }
 
 /* Events */
-.enhanced-calendar :deep(.fc-event) {
+.modern-calendar :deep(.fc-event) {
   border: none;
   border-radius: 6px;
-  background: linear-gradient(135deg, #00bcd4 0%, #00acc1 100%);
-  box-shadow: 0 2px 4px rgba(0, 188, 212, 0.3);
-  transition: all 0.3s ease;
+  background: #10b981;
+  border-left: 3px solid #059669;
+  box-shadow: 0 1px 3px rgba(16, 185, 129, 0.2);
+  transition: all 0.2s ease;
   cursor: pointer;
 }
 
-.enhanced-calendar :deep(.fc-event:hover) {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 188, 212, 0.5);
+.modern-calendar :deep(.fc-event:hover) {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 8px rgba(16, 185, 129, 0.3);
+  background: #059669;
 }
 
 .event-content {
-  padding: 0.5rem;
+  padding: 0.4rem 0.5rem;
   color: white;
 }
 
 .event-time {
   display: flex;
   align-items: center;
-  gap: 0.25rem;
+  gap: 0.3rem;
   font-weight: 600;
-  font-size: 0.75rem;
-  margin-bottom: 0.25rem;
+  font-size: 0.7rem;
+  margin-bottom: 0.2rem;
   opacity: 0.95;
 }
 
 .event-time i {
-  font-size: 0.7rem;
+  font-size: 0.65rem;
+  position: relative;
+  z-index: 2;
+  backface-visibility: hidden;
+  transform: translateZ(0);
 }
 
 .event-title {
   font-weight: 500;
-  font-size: 0.875rem;
-  line-height: 1.3;
+  font-size: 0.8rem;
+  line-height: 1.2;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-/* Selection highlight */
-.enhanced-calendar :deep(.fc-highlight) {
-  background: rgba(0, 188, 212, 0.15);
+/* Selection Highlight */
+.modern-calendar :deep(.fc-highlight) {
+  background: rgba(16, 185, 129, 0.12);
   border-radius: 4px;
 }
 
-/* Today column */
-.enhanced-calendar :deep(.fc-day-today) {
-  background: rgba(0, 188, 212, 0.05) !important;
+/* Today Column */
+.modern-calendar :deep(.fc-day-today) {
+  background: rgba(16, 185, 129, 0.03) !important;
 }
 
-/* Business hours */
-.enhanced-calendar :deep(.fc-non-business) {
+/* Business Hours */
+.modern-calendar :deep(.fc-non-business) {
   background: #f8f9fa;
 }
 
+/* Borders */
+.modern-calendar :deep(.fc-scrollgrid) {
+  border-color: #dee2e6;
+}
+
+.modern-calendar :deep(td),
+.modern-calendar :deep(th) {
+  border-color: #e9ecef;
+}
+
 /* Scrollbar */
-.enhanced-calendar :deep(.fc-scroller)::-webkit-scrollbar {
-  width: 8px;
+.modern-calendar :deep(.fc-scroller)::-webkit-scrollbar {
+  width: 6px;
 }
 
-.enhanced-calendar :deep(.fc-scroller)::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 4px;
+.modern-calendar :deep(.fc-scroller)::-webkit-scrollbar-track {
+  background: #f1f3f5;
+  border-radius: 3px;
 }
 
-.enhanced-calendar :deep(.fc-scroller)::-webkit-scrollbar-thumb {
+.modern-calendar :deep(.fc-scroller)::-webkit-scrollbar-thumb {
   background: #cbd5e0;
-  border-radius: 4px;
+  border-radius: 3px;
 }
 
-.enhanced-calendar :deep(.fc-scroller)::-webkit-scrollbar-thumb:hover {
+.modern-calendar :deep(.fc-scroller)::-webkit-scrollbar-thumb:hover {
   background: #a0aec0;
 }
 
 /* Responsive */
 @media (max-width: 768px) {
-  .calendar-wrapper {
+  .calendar-container {
     padding: 1rem;
   }
 
-  .enhanced-calendar :deep(.fc-toolbar) {
+  .modern-calendar :deep(.fc-toolbar) {
     flex-direction: column;
-    gap: 1rem;
+    gap: 0.75rem;
   }
 
-  .enhanced-calendar :deep(.fc-toolbar-title) {
-    font-size: 1.25rem;
+  .modern-calendar :deep(.fc-toolbar-title) {
+    font-size: 1.1rem;
+  }
+
+  .modern-calendar :deep(.fc-button) {
+    font-size: 0.8rem;
+    padding: 0.45rem 0.75rem;
+  }
+
+  .modern-calendar :deep(.fc-timegrid-slot) {
+    height: 2rem;
   }
 }
 </style>

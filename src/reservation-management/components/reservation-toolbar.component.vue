@@ -2,25 +2,25 @@
 export default {
   name: "reservation-toolbar",
   props: {
-    sharedAreas: {type: Array, required: true}
-  },
-  data() {
-    return {
-      selectedItem: null
-    }
-  },
-  watch: {
-    selectedItem(newValue) {
-      console.log('selected item:', newValue);
-    }
+    sharedAreas: { type: Array, required: true },
+    selectedAreaId: { type: Number, default: null }
   },
   methods: {
-    onSharedSpaceSelected(item) {
-      if(item) {
-        console.log('enviando evento', item)
-        this.$emit('shared-space-selected', item);
+    isSelected(area) {
+      return this.selectedAreaId === area.id;
+    },
+    selectSpace(area) {
+      this.$emit('shared-space-selected', area);
+    },
+    getAvailabilityStatus() {
+      const now = new Date();
+      const currentHour = now.getHours();
+
+      // Business hours: 07:00-20:00
+      if (currentHour >= 7 && currentHour < 20) {
+        return { text: 'Open Now', class: 'available' };
       } else {
-        console.warn("No space selected");
+        return { text: 'Closed', class: 'closed' };
       }
     }
   }
@@ -28,301 +28,279 @@ export default {
 </script>
 
 <template>
-  <div class="toolbar-container">
-    <div class="toolbar-content">
-      <div class="toolbar-header">
-        <div class="header-icon">
-          <i class="pi pi-building"></i>
-        </div>
-        <div class="header-text">
-          <h2 class="header-title">Gestión de Reservas</h2>
-          <p class="header-subtitle">Selecciona un espacio para ver las reservas disponibles</p>
-        </div>
+  <div class="spaces-container">
+    <div class="header">
+      <div class="header-icon">
+        <i class="pi pi-calendar-plus"></i>
       </div>
+      <div>
+        <h2>Select a Shared Space</h2>
+        <p>Choose a space to view its reservations and book a time slot</p>
+      </div>
+    </div>
 
-      <div class="search-section">
-        <div class="select-wrapper">
-          <i class="pi pi-map-marker select-icon"></i>
-          <pv-select
-              v-model="selectedItem"
-              :options="sharedAreas"
-              optionLabel="name"
-              placeholder="Selecciona un espacio compartido"
-              checkmark
-              :highlightOnSelect="false"
-              class="space-select"
-          >
-            <template #value="slotProps">
-              <div v-if="slotProps.value" class="selected-value">
-                <i class="pi pi-map-marker"></i>
-                <span>{{ slotProps.value.name }}</span>
-              </div>
-              <span v-else class="placeholder-text">
-                {{ slotProps.placeholder }}
-              </span>
-            </template>
-            <template #option="slotProps">
-              <div class="option-item">
-                <i class="pi pi-building"></i>
-                <span>{{ slotProps.option.name }}</span>
-              </div>
-            </template>
-          </pv-select>
+    <div class="spaces-grid">
+      <div
+        v-for="area in sharedAreas"
+        :key="area.id"
+        :class="['space-card', { 'selected': isSelected(area) }]"
+        @click="selectSpace(area)"
+      >
+        <div class="card-header">
+          <div class="space-icon">
+            <i class="pi pi-building"></i>
+          </div>
+          <h3>{{ area.name }}</h3>
         </div>
 
-        <pv-button
-            label="Buscar Reservas"
-            icon="pi pi-search"
-            @click="onSharedSpaceSelected(selectedItem)"
-            :disabled="!selectedItem"
-            class="search-button"
-            iconPos="left"
-        />
+        <div class="card-body">
+          <p class="description">{{ area.description || 'No description available' }}</p>
+
+          <div class="info-grid">
+            <div class="info-item">
+              <i class="pi pi-users"></i>
+              <span class="label">Capacity</span>
+              <span class="value">{{ area.capacity }} people</span>
+            </div>
+
+            <div class="info-item">
+              <i class="pi pi-clock"></i>
+              <span class="label">Hours</span>
+              <span class="value">07:00 - 20:00</span>
+            </div>
+
+            <div class="info-item">
+              <i class="pi pi-info-circle"></i>
+              <span class="label">Status</span>
+              <span :class="['status-badge', getAvailabilityStatus().class]">
+                {{ getAvailabilityStatus().text }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-footer">
+          <i class="pi pi-check-circle"></i>
+          <span>{{ isSelected(area) ? 'Selected' : 'Click to select' }}</span>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <style scoped>
-.toolbar-container {
-  background: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 100%);
-  border-radius: 16px;
-  padding: 2rem;
-  margin-bottom: 2rem;
-  box-shadow: 0 4px 15px rgba(0, 188, 212, 0.2);
+.spaces-container {
+  margin-bottom: 1.5rem;
 }
 
-.toolbar-content {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-/* Header Section */
-.toolbar-header {
+.header {
   display: flex;
   align-items: center;
   gap: 1rem;
-  color: #00838f;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #e9ecef;
 }
 
 .header-icon {
-  width: 3.5rem;
-  height: 3.5rem;
-  border-radius: 12px;
-  background: white;
-  box-shadow: 0 2px 8px rgba(0, 188, 212, 0.2);
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.75rem;
-  color: #00bcd4;
-}
-
-.header-text {
-  flex: 1;
-}
-
-.header-title {
-  margin: 0;
   font-size: 1.5rem;
-  font-weight: 700;
-  color: #00838f;
-}
-
-.header-subtitle {
-  margin: 0.25rem 0 0 0;
-  font-size: 0.9rem;
-  color: #00acc1;
-  font-weight: 400;
-}
-
-/* Search Section */
-.search-section {
-  display: flex;
-  gap: 1rem;
-  align-items: stretch;
-}
-
-.select-wrapper {
-  flex: 1;
+  color: white;
+  flex-shrink: 0;
   position: relative;
-  display: flex;
-  align-items: center;
+  z-index: 2;
+  backface-visibility: hidden;
+  transform: translateZ(0);
 }
 
-.select-icon {
-  position: absolute;
-  left: 1rem;
-  color: #00bcd4;
-  font-size: 1.1rem;
-  z-index: 1;
-  pointer-events: none;
+.header h2 {
+  margin: 0 0 0.25rem 0;
+  font-size: 1.35rem;
+  font-weight: 600;
+  color: #2c3e50;
 }
 
-.space-select {
-  width: 100%;
-  background: white;
+.header p {
+  margin: 0;
+  font-size: 0.875rem;
+  color: #6c757d;
+}
+
+.spaces-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.25rem;
+}
+
+.space-card {
+  background: #ffffff;
+  border: 2px solid #e9ecef;
   border-radius: 12px;
-  border: none;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 1.25rem;
+  cursor: pointer;
   transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
-.space-select :deep(.p-select-label) {
-  padding: 0.875rem 1rem 0.875rem 3rem;
-  font-weight: 500;
-  color: #2d3748;
+.space-card:hover {
+  border-color: #10b981;
+  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.15);
+  transform: translateY(-2px);
 }
 
-.space-select :deep(.p-select-dropdown) {
-  color: #00bcd4;
+.space-card.selected {
+  border-color: #10b981;
+  background: linear-gradient(to bottom, rgba(16, 185, 129, 0.05) 0%, #ffffff 100%);
+  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.2);
 }
 
-.space-select:hover {
-  box-shadow: 0 6px 16px rgba(0, 188, 212, 0.15);
-  transform: translateY(-1px);
-}
-
-.space-select:focus-within {
-  box-shadow: 0 0 0 3px rgba(0, 188, 212, 0.2);
-}
-
-.selected-value {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  color: #2d3748;
-}
-
-.selected-value i {
-  color: #00bcd4;
-  font-size: 0.9rem;
-}
-
-.placeholder-text {
-  color: #a0aec0;
-}
-
-.option-item {
+.card-header {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  padding: 0.5rem;
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #e9ecef;
 }
 
-.option-item i {
-  color: #00bcd4;
-  font-size: 1rem;
-}
-
-/* Search Button */
-.search-button {
-  padding: 0.875rem 2rem;
-  background: #00bcd4;
+.space-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
   color: white;
-  border: none;
-  border-radius: 12px;
-  font-weight: 600;
-  font-size: 1rem;
-  box-shadow: 0 4px 12px rgba(0, 188, 212, 0.3);
-  transition: all 0.3s ease;
-  white-space: nowrap;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 2;
+  backface-visibility: hidden;
+  transform: translateZ(0);
 }
 
-.search-button:hover:not(:disabled) {
-  background: #00acc1;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0, 188, 212, 0.4);
-}
-
-.search-button:active:not(:disabled) {
-  transform: translateY(0);
-}
-
-.search-button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  background: #b2ebf2;
-}
-
-.search-button :deep(.p-button-label) {
-  font-weight: 600;
-}
-
-.search-button :deep(.p-button-icon) {
+.card-header h3 {
+  margin: 0;
   font-size: 1.1rem;
+  font-weight: 600;
+  color: #2c3e50;
 }
 
-/* Responsive Design */
+.card-body {
+  margin-bottom: 1rem;
+}
+
+.description {
+  margin: 0 0 1rem 0;
+  font-size: 0.875rem;
+  color: #6c757d;
+  line-height: 1.5;
+  min-height: 2.5rem;
+}
+
+.info-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.info-item {
+  display: grid;
+  grid-template-columns: 20px 1fr auto;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.info-item i {
+  color: #10b981;
+  font-size: 0.9rem;
+  position: relative;
+  z-index: 2;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}
+
+.info-item .label {
+  font-size: 0.85rem;
+  color: #6c757d;
+  font-weight: 500;
+}
+
+.info-item .value {
+  font-size: 0.875rem;
+  color: #2c3e50;
+  font-weight: 600;
+  text-align: right;
+}
+
+.status-badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status-badge.available {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.status-badge.closed {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e9ecef;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #6c757d;
+}
+
+.space-card.selected .card-footer {
+  color: #10b981;
+}
+
+.card-footer i {
+  font-size: 1rem;
+  position: relative;
+  z-index: 2;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}
+
 @media (max-width: 768px) {
-  .toolbar-container {
-    padding: 1.5rem;
-    border-radius: 12px;
+  .spaces-grid {
+    grid-template-columns: 1fr;
   }
 
-  .toolbar-header {
+  .header {
     flex-direction: column;
     align-items: flex-start;
-    gap: 1rem;
   }
 
   .header-icon {
-    width: 3rem;
-    height: 3rem;
-    font-size: 1.5rem;
+    width: 42px;
+    height: 42px;
+    font-size: 1.3rem;
   }
 
-  .header-title {
-    font-size: 1.25rem;
+  .header h2 {
+    font-size: 1.2rem;
   }
-
-  .header-subtitle {
-    font-size: 0.85rem;
-  }
-
-  .search-section {
-    flex-direction: column;
-  }
-
-  .search-button {
-    width: 100%;
-    justify-content: center;
-  }
-}
-
-@media (max-width: 480px) {
-  .toolbar-container {
-    padding: 1.25rem;
-  }
-
-  .header-title {
-    font-size: 1.1rem;
-  }
-
-  .space-select :deep(.p-select-label) {
-    font-size: 0.9rem;
-  }
-
-  .search-button {
-    font-size: 0.9rem;
-    padding: 0.75rem 1.5rem;
-  }
-}
-
-/* Animation */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.toolbar-container {
-  animation: fadeInUp 0.5s ease-out;
 }
 </style>

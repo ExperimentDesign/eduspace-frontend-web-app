@@ -28,7 +28,10 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('user', ['userId', 'userRole'])
+    ...mapGetters('user', ['userId', 'userRole']),
+    selectedSpace() {
+      return this.areas.find(area => area.id === this.areaId) || null;
+    }
   },
   methods: {
     //#region Event Handlers
@@ -36,12 +39,16 @@ export default {
     onSharedSpaceSelected(item) {
       this.areaId = item.id;
       this.getReservationsByAreaId(this.areaId);
-      console.log('Area seleccionada:', this.areaId);
     },
 
     onDateSelected(dateInfo) {
       if (!this.areaId) {
-        alert('Por favor selecciona un espacio compartido primero');
+        this.$toast.add({
+          severity: 'warn',
+          summary: 'No Space Selected',
+          detail: 'Please select a shared space first',
+          life: 3000
+        });
         return;
       }
 
@@ -67,13 +74,17 @@ export default {
       this.sharedAreaService.getAll()
           .then(response => {
             this.areas = response.data.map(area => new SharedSpace(area));
-            console.log('Areas cargadas:', this.areas);
             this.loading = false;
           })
           .catch(error => {
-            console.error('Error al cargar áreas:', error);
+            console.error('Error loading areas:', error);
             this.loading = false;
-            alert('Error al cargar los espacios compartidos');
+            this.$toast.add({
+              severity: 'error',
+              summary: 'Error',
+              detail: 'Error loading shared spaces',
+              life: 3000
+            });
           });
     },
 
@@ -94,13 +105,17 @@ export default {
                 }
               };
             });
-            console.log('Reservas cargadas:', this.events);
             this.loading = false;
           })
           .catch(error => {
-            console.error('Error al cargar reservas:', error);
+            console.error('Error loading reservations:', error);
             this.loading = false;
-            alert('Error al cargar las reservas del área');
+            this.$toast.add({
+              severity: 'error',
+              summary: 'Error',
+              detail: 'Error loading area reservations',
+              life: 3000
+            });
           });
     },
 
@@ -113,8 +128,6 @@ export default {
 
       this.reservationService.create(this.userId, this.areaId, payload)
           .then(response => {
-            console.log('Reserva creada exitosamente:', response.data);
-
             const newReservation = new Reservation(response.data);
 
             // Add to events array for immediate UI update
@@ -129,16 +142,22 @@ export default {
               }
             });
 
-            alert('Reserva creada exitosamente');
+            this.$toast.add({
+              severity: 'success',
+              summary: 'Success',
+              detail: 'Reservation created successfully',
+              life: 3000
+            });
           })
           .catch(error => {
-            console.error('Error al crear reserva:', error);
+            console.error('Error creating reservation:', error);
 
-            if (error.response) {
-              alert(`Error: ${error.response.data.message || 'No se pudo crear la reserva'}`);
-            } else {
-              alert('Error al crear la reserva. Por favor intenta de nuevo.');
-            }
+            this.$toast.add({
+              severity: 'error',
+              summary: 'Error',
+              detail: error.response?.data?.message || 'Could not create reservation. Please try again.',
+              life: 3000
+            });
           });
     }
 
@@ -153,15 +172,15 @@ export default {
 </script>
 
 <template>
-  <div v-if="loading" class="flex justify-content-center align-items-center p-5">
+  <div v-if="loading" class="loading-container">
     <pv-progress-spinner />
-    <span class="ml-3">Cargando espacios compartidos...</span>
+    <span class="loading-text">Loading shared spaces...</span>
   </div>
 
   <div v-else>
     <reservation-toolbar
         :sharedAreas="areas"
-        :areaId="areaId"
+        :selectedAreaId="areaId"
         @shared-space-selected="onSharedSpaceSelected($event)"
     />
 
@@ -169,12 +188,14 @@ export default {
         :events="events"
         :areaId="areaId"
         :userId="userId"
+        :selectedSpace="selectedSpace"
         @date-selected="onDateSelected"
     />
 
     <create-reservation-dialog
         :visible="showDialog"
         :dateInfo="selectedDateInfo"
+        :selectedSpace="selectedSpace"
         @reservation-created="onReservationCreated"
         @dialog-closed="onDialogClosed"
     />
@@ -182,5 +203,17 @@ export default {
 </template>
 
 <style scoped>
-/* Add any additional styles here */
+.loading-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  gap: 1rem;
+}
+
+.loading-text {
+  font-size: 1rem;
+  color: #6c757d;
+  font-weight: 500;
+}
 </style>
