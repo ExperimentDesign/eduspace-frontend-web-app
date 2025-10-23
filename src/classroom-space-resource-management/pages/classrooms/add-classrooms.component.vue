@@ -28,7 +28,7 @@ export default {
 
         const payload = { name, description };
 
-        await this.classroomService.createWithTeacher(payload, teacherId);
+        await this.classroomService.create(payload, teacherId);
 
         alert("Classroom created successfully");
         this.serverError = null;

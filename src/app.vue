@@ -4,7 +4,7 @@
     <header v-if="userRole" class="sidenav-wrapper">
       <div :class="['sidenav', { 'admin-sidenav': userRole === 'RoleAdmin', 'teacher-sidenav': userRole === 'RoleTeacher' }]">
         <div class="user-info">
-          <pv-avatar image="../src/assets/default-avatar.png" class="mr-2" size="xlarge" shape="circle"></pv-avatar>
+          <pv-avatar :image="avatarImage" class="mr-2" size="xlarge" shape="circle"></pv-avatar>
           <div class="info">
             <p class="info" :style="{ color: userRole === 'RoleAdmin' ? '#064C58' : '#584F06' }">
               {{ userRole === 'RoleAdmin' ? 'Administrator' : 'Teacher' }}
@@ -71,12 +71,15 @@ import PersonalDIcon from "/src/assets/admin/Personal_Data.svg";
 import BreakdownIcon from "/src/assets/teacher/Breakdown_Reports.svg";
 import NotificationIcon from "/src/assets/teacher/Notification.svg";
 import SpaceIcon from "/src/assets/teacher/Space_Availability.svg";
+import DefaultAvatar from "/src/assets/default-avatar.png";
+
 export default {
   name: "app",
   data() {
     return {
       drawer: false,
       items: [],
+      avatarImage: DefaultAvatar,
     };
   },
   computed: {

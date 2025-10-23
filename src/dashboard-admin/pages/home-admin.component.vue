@@ -345,6 +345,8 @@ export default {
   border-radius: 16px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  will-change: transform;
+  position: relative;
 }
 
 .scrollable-card:hover {
@@ -370,23 +372,30 @@ export default {
   justify-content: center;
   gap: 12px;
   padding: 16px;
+  position: relative;
+  z-index: 1;
+  background: inherit;
 }
 
 .header-icon {
   font-size: 24px;
   color: #2196F3;
+  position: relative;
+  z-index: 2;
+  backface-visibility: hidden;
+  transform: translateZ(0);
 }
 
 .teachers-card .header-icon {
-  color: #1976D2;
+  color: #1976D2 !important;
 }
 
 .meet-card .header-icon {
-  color: #388E3C;
+  color: #388E3C !important;
 }
 
 .reports-card .header-icon {
-  color: #7B1FA2;
+  color: #7B1FA2 !important;
 }
 
 .card-title {
@@ -394,6 +403,8 @@ export default {
   font-size: 20px;
   font-weight: 600;
   color: #333;
+  position: relative;
+  z-index: 2;
 }
 
 .teacher-list {
