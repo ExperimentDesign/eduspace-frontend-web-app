@@ -35,13 +35,7 @@ export default {
     ...mapGetters('user', ['userId', 'currentUsername']),
 
     teachersWithDisabled() {
-      // When 2 teachers are already selected, disable other teacher options
-      const max = 2;
-      const selectedSet = new Set(this.selectedTeachers || []);
-      return this.teachers.map(t => ({
-        ...t,
-        disabled: (this.selectedTeachers && this.selectedTeachers.length >= max && !selectedSet.has(t.id))
-      }));
+      return this.teachers;
     }
   },
   created() {
@@ -51,12 +45,25 @@ export default {
     this.$watch('item', (newItem) => {
       this.localItem = { ...newItem };
 
+      // Handle day/date conversion
+      if (newItem && (newItem.day || newItem.date)) {
+        const dateStr = newItem.day || newItem.date;
+        if (typeof dateStr === 'string') {
+          this.localItem.day = new Date(dateStr + 'T00:00:00');
+        } else if (dateStr instanceof Date) {
+          this.localItem.day = dateStr;
+        }
+      }
+
+      // Handle start time conversion
       if (newItem && newItem.start && typeof newItem.start === 'string') {
         const [hours, minutes, seconds] = newItem.start.split(':');
         const startDate = new Date();
         startDate.setHours(hours, minutes, seconds || 0);
         this.localItem.start = startDate;
       }
+
+      // Handle end time conversion
       if (newItem && newItem.end && typeof newItem.end === 'string') {
         const [hours, minutes, seconds] = newItem.end.split(':');
         const endDate = new Date();
@@ -64,27 +71,25 @@ export default {
         this.localItem.end = endDate;
       }
 
-      if (newItem && newItem.id) {
-        this.localItem.administratorId = newItem.administrator?.id || null;
+      // Handle edit mode
+      if (newItem && (newItem.id || newItem.meetingId)) {
+        this.localItem.administratorId = newItem.administrator?.id || newItem.administratorId || null;
         if (newItem.classroom) {
-          this.localItem.classroomId = newItem.classroom.id;
+          this.localItem.classroomId = typeof newItem.classroom === 'object'
+            ? newItem.classroom.id
+            : newItem.classroom;
+        } else if (newItem.classroomId) {
+          this.localItem.classroomId = newItem.classroomId;
         }
       } else {
+        // Create mode
         this.localItem.administratorId = this.userId;
-        this.localItem.classroomId = null;
+        if (!this.localItem.classroomId) {
+          this.localItem.classroomId = null;
+        }
       }
       this.formatTeachersForEdit();
     }, { immediate: true, deep: true });
-
-    // Watch selectedTeachers to prevent selecting more than 2 and show an error
-    this.$watch('selectedTeachers', (newVal) => {
-      if (newVal && newVal.length > 2) {
-        this.selectedTeachers = newVal.slice(0, 2);
-        this.selectedTeachersError = 'Solo puedes invitar hasta 2 profesores.';
-      } else {
-        this.selectedTeachersError = null;
-      }
-    }, { immediate: true });
   },
   methods: {
     async loadInitialData() {
@@ -114,12 +119,8 @@ export default {
     },
     formatTeachersForEdit() {
       if (Array.isArray(this.item.teachers) && this.item.teachers.length > 0) {
-        this.selectedTeachers = this.item.teachers.map(teacher => typeof teacher === 'object' ? teacher.id : teacher).slice(0, 2);
-        if (this.item.teachers.length > 2) {
-          this.selectedTeachersError = 'Solo puedes invitar hasta 2 profesores.';
-        } else {
-          this.selectedTeachersError = null;
-        }
+        this.selectedTeachers = this.item.teachers.map(teacher => typeof teacher === 'object' ? teacher.id : teacher);
+        this.selectedTeachersError = null;
       } else {
         this.selectedTeachers = [];
         this.selectedTeachersError = null;
@@ -143,10 +144,6 @@ export default {
     },
     onSaveRequested() {
       this.submitted = true;
-      if (this.selectedTeachers && this.selectedTeachers.length > 2) {
-        this.selectedTeachersError = 'Solo puedes invitar hasta 2 profesores.';
-        return;
-      }
       if (!this.localItem.title || !this.localItem.day || !this.localItem.start || !this.localItem.end || !this.localItem.classroomId) {
         return;
       }

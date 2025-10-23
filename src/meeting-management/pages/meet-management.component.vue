@@ -73,6 +73,13 @@ export default {
     },
     onEditItem(item) {
       this.meet = JSON.parse(JSON.stringify(item));
+      // Ensure classroomId and administratorId are properly set
+      if (item.classroom && !this.meet.classroomId) {
+        this.meet.classroomId = typeof item.classroom === 'object' ? item.classroom.id : item.classroom;
+      }
+      if (item.administrator && !this.meet.administratorId) {
+        this.meet.administratorId = typeof item.administrator === 'object' ? item.administrator.id : item.administrator;
+      }
       this.isEdit = true;
       this.submitted = false;
       this.createAndEditDialogIsVisible = true;
@@ -108,10 +115,9 @@ export default {
         const newMeeting = createResponse.data;
 
         if (payload.teacherIds && payload.teacherIds.length > 0) {
-          const addTeachersPromises = payload.teacherIds.map(teacherId =>
-              this.meetService.addTeacherToMeeting(newMeeting.meetingId, teacherId)
-          );
-          await Promise.all(addTeachersPromises);
+          for (const teacherId of payload.teacherIds) {
+            await this.meetService.addTeacherToMeeting(newMeeting.meetingId, teacherId);
+          }
         }
         await this.loadMeetings();
         this.notifySuccessfulAction('Meet Created Successfully');
@@ -128,6 +134,24 @@ export default {
         payload.meetData.classroomId = this.meet.classroom?.id;
 
         await this.meetService.update(this.meet.id, payload.meetData);
+
+        const currentTeacherIds = this.meet.teachers?.map(t => t.id) || [];
+        const newTeacherIds = payload.teacherIds || [];
+        const teachersToAdd = newTeacherIds.filter(id => !currentTeacherIds.includes(id));
+        const teachersToRemove = currentTeacherIds.filter(id => !newTeacherIds.includes(id));
+
+        if (teachersToRemove.length > 0) {
+          for (const teacherId of teachersToRemove) {
+            await this.meetService.removeTeacherFromMeeting(this.meet.id, teacherId);
+          }
+        }
+
+        if (teachersToAdd.length > 0) {
+          for (const teacherId of teachersToAdd) {
+            await this.meetService.addTeacherToMeeting(this.meet.id, teacherId);
+          }
+        }
+
         await this.loadMeetings();
         this.notifySuccessfulAction('Meet Updated Successfully');
       } catch (error) {

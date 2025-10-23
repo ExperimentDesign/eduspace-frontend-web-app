@@ -33,4 +33,9 @@ export class MeetService {
         const url = `${this.resourceEndpoint}/${meetingId}/teachers/${teacherId}`;
         return http.post(url, {});
     }
+
+    removeTeacherFromMeeting(meetingId, teacherId) {
+        const url = `${this.resourceEndpoint}/${meetingId}/teachers/${teacherId}`;
+        return http.delete(url);
+    }
 }

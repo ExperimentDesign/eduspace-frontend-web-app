@@ -12,7 +12,7 @@
           <div class="compact-row">
             <i class="pi pi-calendar-plus"></i>
             <div class="compact-info">
-              <div class="compact-label">{{ meeting.day || meeting.date || 'N/A' }}</div>
+              <div class="compact-label">{{ formatDate(meeting.day || meeting.date) }}</div>
               <div class="compact-sub">{{ meeting.start || '—' }} - {{ meeting.end || '—' }}</div>
             </div>
             <div class="compact-right">
@@ -34,7 +34,7 @@
             <i class="pi pi-calendar-plus"></i>
             <div>
               <div class="label">Date</div>
-              <div class="value">{{ meeting.day || meeting.date || 'N/A' }}</div>
+              <div class="value">{{ formatDate(meeting.day || meeting.date) }}</div>
             </div>
           </div>
           <div class="row time-row">
@@ -94,6 +94,32 @@ export default {
       if (typeof c === 'string') return c;
       return c.name || c.room || 'N/A';
     }
+  },
+  methods: {
+    formatDate(dateValue) {
+      if (!dateValue) return 'N/A';
+
+      try {
+        let date;
+        if (typeof dateValue === 'string') {
+          // Handle YYYY-MM-DD format
+          date = new Date(dateValue + 'T00:00:00');
+        } else if (dateValue instanceof Date) {
+          date = dateValue;
+        } else {
+          return 'N/A';
+        }
+
+        // Format as YYYY-MM-DD
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      } catch (error) {
+        console.error('Error formatting date:', error);
+        return 'N/A';
+      }
+    }
   }
 }
 </script>
@@ -106,6 +132,8 @@ export default {
   box-shadow: 0 4px 12px rgba(44, 62, 80, 0.10);
   background: #ffffff;
   transition: box-shadow 0.18s ease, transform 0.12s ease;
+  will-change: transform;
+  position: relative;
 }
 .meeting-card:hover {
   box-shadow: 0 12px 36px rgba(44, 62, 80, 0.18);
@@ -117,11 +145,26 @@ export default {
   align-items: center;
   gap: 0.75rem;
   font-weight: 600;
+  position: relative;
+  z-index: 2;
 }
-.card-title i { color: #3b82f6; }
+.card-title i {
+  color: #3b82f6 !important;
+  position: relative;
+  z-index: 2;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}
 .meeting-content { display: flex; flex-direction: column; gap: 0.75rem; }
 .row { display: flex; gap: 0.75rem; align-items: center; }
-.row i { color: #6c757d; min-width: 22px; }
+.row i {
+  color: #6c757d !important;
+  min-width: 22px;
+  position: relative;
+  z-index: 2;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}
 .label { font-size: 0.75rem; color: #6c757d; }
 .value { font-size: 0.95rem; color: #2c3e50; }
 .description { background: #f8f9fa; padding: 0.75rem; border-radius: 6px; }
@@ -129,6 +172,13 @@ export default {
 
 .compact-content { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 4px; }
 .compact-row { display: flex; align-items: center; gap: 8px; width: 100%; }
+.compact-row i {
+  color: #6c757d !important;
+  position: relative;
+  z-index: 2;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}
 .compact-info { display: flex; flex-direction: column; }
 .compact-label { font-weight: 600; }
 .compact-sub { font-size: 0.85rem; color: #6c757d; }
