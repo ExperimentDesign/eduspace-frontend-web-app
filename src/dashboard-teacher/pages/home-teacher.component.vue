@@ -3,15 +3,21 @@
     <div class="teacher-info">
       <div class="teacher-avatar">
         <pv-avatar
-            :label="initials || 'NA'"
-            size="xlarge"
-            style="background-color: #2196F3; color: white; font-size: 30px;"
+          :label="initials || 'NA'"
+          size="xlarge"
+          style="background-color: #2196f3; color: white; font-size: 30px"
         ></pv-avatar>
       </div>
       <div class="teacher-details">
-        <p><strong>Name:</strong> {{ teacher?.firstName || "Not available" }}</p>
-        <p><strong>Last Name:</strong> {{ teacher?.lastName || "Not available" }}</p>
-        <p><strong>Cell Phone:</strong> {{ teacher?.phone || "Not available" }}</p>
+        <p>
+          <strong>Name:</strong> {{ teacher?.firstName || "Not available" }}
+        </p>
+        <p>
+          <strong>Last Name:</strong> {{ teacher?.lastName || "Not available" }}
+        </p>
+        <p>
+          <strong>Cell Phone:</strong> {{ teacher?.phone || "Not available" }}
+        </p>
         <p><strong>Status:</strong> Teacher</p>
         <p><strong>Email:</strong> {{ teacher?.email || "Not available" }}</p>
       </div>
@@ -27,15 +33,17 @@
       <template #content>
         <div v-if="classroomReservations.length" class="cards-grid">
           <div
-              v-for="(classroom, index) in classroomReservations"
-              :key="`classroom-${index}`"
-              class="classroom-item-card"
+            v-for="(classroom, index) in classroomReservations"
+            :key="`classroom-${index}`"
+            class="classroom-item-card"
           >
             <div class="item-header">
               <i class="pi pi-building"></i>
               <h4>{{ classroom.name || "Unknown" }}</h4>
             </div>
-            <p class="item-description">{{ classroom.description || "No description available" }}</p>
+            <p class="item-description">
+              {{ classroom.description || "No description available" }}
+            </p>
           </div>
         </div>
         <div v-else class="empty-state">
@@ -55,27 +63,38 @@
       <template #content>
         <div v-if="sharedAreaReservations.length" class="reservations-list">
           <div
-              v-for="(reservation, index) in sharedAreaReservations"
-              :key="`reservation-${reservation.id || index}`"
-              class="reservation-item"
+            v-for="(reservation, index) in sharedAreaReservations"
+            :key="`reservation-${reservation.id || index}`"
+            class="reservation-item"
           >
             <div class="reservation-row">
               <span class="reservation-label">Title:</span>
-              <span class="reservation-value">{{ reservation.title || 'Reservation' }}</span>
+              <span class="reservation-value">{{
+                reservation.title || "Reservation"
+              }}</span>
             </div>
             <div class="reservation-row">
               <span class="reservation-label">Area:</span>
-              <span class="reservation-value">{{ reservation.areaName || 'Unknown area' }}</span>
+              <span class="reservation-value">{{
+                reservation.areaName || "Unknown area"
+              }}</span>
             </div>
             <div class="reservation-row">
               <span class="reservation-label">Start:</span>
-              <span class="reservation-value">{{ formatDateTime(reservation.start) }}</span>
+              <span class="reservation-value">{{
+                formatDateTime(reservation.start)
+              }}</span>
             </div>
             <div class="reservation-row">
               <span class="reservation-label">End:</span>
-              <span class="reservation-value">{{ formatDateTime(reservation.end) }}</span>
+              <span class="reservation-value">{{
+                formatDateTime(reservation.end)
+              }}</span>
             </div>
-            <hr v-if="index < sharedAreaReservations.length - 1" class="reservation-divider" />
+            <hr
+              v-if="index < sharedAreaReservations.length - 1"
+              class="reservation-divider"
+            />
           </div>
         </div>
         <div v-else class="empty-state">
@@ -91,7 +110,7 @@
 import { mapGetters } from "vuex";
 import http from "../../shared/services/http-common.js";
 import { ReservationService } from "../../reservation-management/services/reservation.service.js";
-import {ClassroomService} from "../../shared/services/classroom.service.js";
+import { ClassroomService } from "../../shared/services/classroom.service.js";
 
 export default {
   name: "TeacherDashboard",
@@ -107,7 +126,9 @@ export default {
   computed: {
     ...mapGetters("user", ["userId"]),
     fullName() {
-      return `${this.teacher?.firstName || ""} ${this.teacher?.lastName || ""}`.trim();
+      return `${this.teacher?.firstName || ""} ${
+        this.teacher?.lastName || ""
+      }`.trim();
     },
     initials() {
       const [firstName, lastName] = [
@@ -122,12 +143,12 @@ export default {
       if (!dateString) return "N/A";
       try {
         const date = new Date(dateString);
-        return date.toLocaleString('en-US', {
-          year: 'numeric',
-          month: 'short',
-          day: 'numeric',
-          hour: '2-digit',
-          minute: '2-digit'
+        return date.toLocaleString("en-US", {
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
         });
       } catch (error) {
         console.error("Error formatting date:", error);
@@ -135,33 +156,33 @@ export default {
       }
     },
     formatDate(dateValue) {
-      if (!dateValue) return 'N/A';
+      if (!dateValue) return "N/A";
 
       try {
         let date;
-        if (typeof dateValue === 'string') {
-          date = new Date(dateValue + 'T00:00:00');
+        if (typeof dateValue === "string") {
+          date = new Date(dateValue + "T00:00:00");
         } else if (dateValue instanceof Date) {
           date = dateValue;
         } else {
-          return 'N/A';
+          return "N/A";
         }
 
-        return date.toLocaleDateString('en-US', {
-          year: 'numeric',
-          month: 'short',
-          day: 'numeric'
+        return date.toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "short",
+          day: "numeric",
         });
       } catch (error) {
-        console.error('Error formatting date:', error);
-        return 'N/A';
+        console.error("Error formatting date:", error);
+        return "N/A";
       }
     },
     formatClassroom(classroom) {
-      if (!classroom) return 'N/A';
-      if (typeof classroom === 'string') return classroom;
-      return classroom.name || classroom.room || 'N/A';
-    }
+      if (!classroom) return "N/A";
+      if (typeof classroom === "string") return classroom;
+      return classroom.name || classroom.room || "N/A";
+    },
   },
   async mounted() {
     if (!this.userId) {
@@ -169,34 +190,37 @@ export default {
       return;
     }
     try {
-      const teacherResponse = await http.get(`/teachers-profiles/${this.userId}`);
+      const teacherResponse = await http.get(
+        `/teachers-profiles/${this.userId}`
+      );
       this.teacher = teacherResponse.data;
 
-      const classroomResponse = await http.get(`/classrooms/teachers/${this.userId}`);
+      const classroomResponse = await http.get(
+        `/classrooms/teachers/${this.userId}`
+      );
       this.classroomReservations = classroomResponse.data;
 
       const [areasResponse, reservationsResponse] = await Promise.all([
         http.get("/shared-area"),
-        this.reservationService.getAll()
+        this.reservationService.getAll(),
       ]);
       const allAreas = areasResponse.data;
       const allReservations = reservationsResponse.data;
 
       const myReservations = allReservations.filter(
-          (reservation) => reservation.teacherId === this.userId
+        (reservation) => reservation.teacherId === this.userId
       );
 
-      this.sharedAreaReservations = myReservations.map(reservation => {
-        const area = allAreas.find(a => a.id === reservation.areaId);
+      this.sharedAreaReservations = myReservations.map((reservation) => {
+        const area = allAreas.find((a) => a.id === reservation.areaId);
         return {
           ...reservation,
-          areaName: area ? area.name : 'Unknown area',
-          areaDescription: area ? area.description : ''
+          areaName: area ? area.name : "Unknown area",
+          areaDescription: area ? area.description : "",
         };
       });
 
       console.log("Teacher Dashboard loaded successfully");
-
     } catch (error) {
       console.error("Error loading teacher dashboard data:", error);
     }
@@ -214,7 +238,11 @@ export default {
 
 .teacher-info {
   grid-column: span 2;
-  background: linear-gradient(135deg, rgba(255, 210, 0, 0.4) 0%, rgba(255, 223, 77, 0.3) 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(255, 210, 0, 0.4) 0%,
+    rgba(255, 223, 77, 0.3) 100%
+  );
   padding: 25px;
   border-radius: 20px;
   display: grid;
@@ -277,7 +305,7 @@ export default {
 
 .header-icon {
   font-size: 24px;
-  color: #2196F3;
+  color: #2196f3;
   position: relative;
   z-index: 2;
   backface-visibility: hidden;
@@ -285,11 +313,11 @@ export default {
 }
 
 .classrooms-card .header-icon {
-  color: #1976D2 !important;
+  color: #1976d2 !important;
 }
 
 .reservations-card .header-icon {
-  color: #388E3C !important;
+  color: #388e3c !important;
 }
 
 .card-title {
@@ -313,13 +341,13 @@ export default {
   background: white;
   border-radius: 12px;
   padding: 16px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
   transition: transform 0.12s ease, box-shadow 0.12s ease;
 }
 
 .classroom-item-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 6px 14px rgba(0,0,0,0.12);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.12);
 }
 
 .item-header {
@@ -330,7 +358,7 @@ export default {
 }
 
 .item-header i {
-  color: #1976D2;
+  color: #1976d2;
   font-size: 20px;
   position: relative;
   z-index: 2;
@@ -389,6 +417,52 @@ export default {
 
 .scrollable-card::-webkit-scrollbar-thumb:hover {
   background: rgba(0, 0, 0, 0.3);
+}
+
+/* Reservation item styles */
+.reservations-list {
+  padding: 12px 16px;
+}
+
+.reservation-item {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 10px;
+  padding: 12px 14px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+  margin-bottom: 12px;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+.reservation-item:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.12);
+}
+
+.reservation-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 6px;
+  flex-wrap: wrap;
+}
+
+.reservation-label {
+  font-weight: 600;
+  color: #2c3e50;
+  min-width: 90px;
+  flex: 0 0 auto;
+}
+
+.reservation-value {
+  color: #2f2f2f;
+  flex: 1 1 auto;
+  word-break: break-word;
+}
+
+.reservation-divider {
+  border: none;
+  height: 1px;
+  background: rgba(0, 0, 0, 0.06);
+  margin: 10px 0 0 0;
 }
 
 @media (max-width: 1200px) {

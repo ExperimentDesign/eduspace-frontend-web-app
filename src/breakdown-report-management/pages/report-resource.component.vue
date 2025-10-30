@@ -3,26 +3,28 @@
     <h2>Report Resource</h2>
     <form @submit.prevent="submitForm" class="report-form">
       <div class="form-group">
-        <pv-float-label>
-          <pv-input-text
-              id="kind_of_report"
-              v-model="form.kind_of_report"
-              required
-              placeholder=" "
-          />
-          <label for="kind_of_report" class="float-label">Kind of Report</label>
-        </pv-float-label>
+        <pv-dropdown
+          id="kind_of_report"
+          v-model="form.kind_of_report"
+          :options="reportTypes"
+          optionLabel="label"
+          optionValue="value"
+          placeholder="Select report type"
+          required
+          class="w-full"
+        />
+        <label for="kind_of_report" class="fixed-label">Kind of Report</label>
       </div>
 
       <div class="form-group">
         <pv-float-label>
           <pv-textarea
-              id="description"
-              v-model="form.description"
-              autoResize
-              rows="5"
-              required
-              placeholder=" "
+            id="description"
+            v-model="form.description"
+            autoResize
+            rows="5"
+            required
+            placeholder=" "
           />
           <label for="description" class="float-label">Description</label>
         </pv-float-label>
@@ -30,46 +32,56 @@
 
       <div class="form-group">
         <pv-date-picker
-            id="created_at"
-            v-model="form.createdAt"
-            dateFormat="yy-mm-dd"
-            showIcon
+          id="created_at"
+          v-model="form.createdAt"
+          dateFormat="yy-mm-dd"
+          showIcon
         />
         <label for="created_at" class="fixed-label">Created At</label>
       </div>
 
       <pv-button
-          type="submit"
-          label="Create report"
-          icon="pi pi-check"
-          class="submit-button"
+        type="submit"
+        label="Create report"
+        icon="pi pi-check"
+        class="submit-button"
       />
     </form>
   </div>
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapGetters } from "vuex";
 import { ReportService } from "../services/report.service.js";
 
 export default {
   data() {
     return {
       form: {
-        kind_of_report: '',
-        description: '',
+        kind_of_report: "",
+        description: "",
         resourceId: null,
         createdAt: new Date(),
-        status: 'string'
+        status: "string",
       },
       reportService: new ReportService(),
+      reportTypes: [
+        { label: "Equipment Malfunction", value: "Equipment Malfunction" },
+        { label: "Maintenance Needed", value: "Maintenance Needed" },
+        { label: "Damage/Vandalism", value: "Damage/Vandalism" },
+        { label: "Missing Items", value: "Missing Items" },
+        { label: "Safety Hazard", value: "Safety Hazard" },
+        { label: "Cleaning Required", value: "Cleaning Required" },
+        { label: "Technical Issues", value: "Technical Issues" },
+        { label: "Other", value: "Other" },
+      ],
     };
   },
   created() {
     this.form.resourceId = parseInt(this.$route.params.resourceId);
   },
   computed: {
-    ...mapGetters('user', ['userId']),
+    ...mapGetters("user", ["userId"]),
   },
   methods: {
     async submitForm() {
@@ -78,28 +90,30 @@ export default {
         description: this.form.description,
         resourceId: this.form.resourceId,
         createdAt: this.formatDate(this.form.createdAt),
-        status: this.form.status
+        status: this.form.status,
       };
 
       try {
         await this.reportService.create(reportData);
-        this.$router.push('/dashboard-teacher/breakdown-reports/classrooms');
+        this.$router.push("/dashboard-teacher/breakdown-reports/classrooms");
       } catch (error) {
         console.error("Error al crear el reporte:", error);
-        alert("Error al crear el reporte. Por favor, revisa la consola para más detalles.");
+        alert(
+          "Error al crear el reporte. Por favor, revisa la consola para más detalles."
+        );
       }
     },
     formatDate(date) {
       const d = new Date(date);
       const year = d.getFullYear();
-      const month = String(d.getMonth() + 1).padStart(2, '0');
-      const day = String(d.getDate()).padStart(2, '0');
-      const hours = String(d.getHours()).padStart(2, '0');
-      const minutes = String(d.getMinutes()).padStart(2, '0');
-      const seconds = String(d.getSeconds()).padStart(2, '0');
+      const month = String(d.getMonth() + 1).padStart(2, "0");
+      const day = String(d.getDate()).padStart(2, "0");
+      const hours = String(d.getHours()).padStart(2, "0");
+      const minutes = String(d.getMinutes()).padStart(2, "0");
+      const seconds = String(d.getSeconds()).padStart(2, "0");
 
       return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.229Z`;
-    }
+    },
   },
 };
 </script>
@@ -124,7 +138,7 @@ h2 {
 }
 
 h2::after {
-  content: '';
+  content: "";
   display: block;
   width: 80px;
   height: 4px;
@@ -145,7 +159,8 @@ h2::after {
 
 :deep(.p-inputtext),
 :deep(.p-textarea),
-:deep(.p-datepicker) {
+:deep(.p-datepicker),
+:deep(.p-dropdown) {
   width: 100%;
   padding: 14px;
   border: 2px solid #e0e0e0;
@@ -157,7 +172,8 @@ h2::after {
 
 :deep(.p-inputtext:focus),
 :deep(.p-textarea:focus),
-:deep(.p-datepicker:focus) {
+:deep(.p-datepicker:focus),
+:deep(.p-dropdown:focus) {
   border-color: #3498db;
   box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
 }
@@ -175,7 +191,10 @@ h2::after {
 :deep(.p-inputtext:focus) + .float-label,
 :deep(.p-inputtext:not(:placeholder-shown)) + .float-label,
 :deep(.p-textarea:focus) + .float-label,
-:deep(.p-textarea:not(:placeholder-shown)) + .float-label {
+:deep(.p-textarea:not(:placeholder-shown)) + .float-label,
+:deep(.p-dropdown:focus) + .float-label,
+:deep(.p-dropdown.p-dropdown-open) + .float-label,
+:deep(.p-dropdown .p-dropdown-label:not(:empty)) + .float-label {
   top: -10px;
   font-size: 0.9rem;
   color: #3498db;
