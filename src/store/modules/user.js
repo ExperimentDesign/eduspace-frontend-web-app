@@ -17,7 +17,6 @@ export default {
         verificationEmail: null,
         profile: getStoredUser()?.profile || null,
         classrooms: getStoredUser()?.classrooms || [],
-        meetings: getStoredUser()?.meetings || [],
     },
     mutations: {
         SET_USER(state, user) {
@@ -26,7 +25,6 @@ export default {
             state.role = user?.role || null;
             state.profile = user?.profile || null;
             state.classrooms = user?.classrooms || [];
-            state.meetings = user?.meetings || [];
             state.isAuthenticated = true;
             state.isVerificationPending = false;
             state.verificationEmail = null;
@@ -42,7 +40,6 @@ export default {
             state.user = null;
             state.profile = null;
             state.classrooms = [];
-            state.meetings = [];
             state.isVerificationPending = false;
             state.verificationEmail = null;
         },
@@ -60,7 +57,7 @@ export default {
         async verifyCodeAndLogin({ commit }, verifyPayload) {
             const response = await AuthenticationService.verifyCode(verifyPayload);
 
-            const { id, profileId, role, token, username, profile, classrooms, meetings } = response.data;
+            const { id, profileId, role, token, username, profile, classrooms } = response.data;
 
             if (!profileId || !role || !token) {
                 throw new Error("Datos de usuario incompletos en la respuesta del servidor.");
@@ -72,8 +69,7 @@ export default {
                 role,
                 username,
                 profile: profile || null,
-                classrooms: classrooms || [],
-                meetings: meetings || []
+                classrooms: classrooms || []
             };
 
             localStorage.setItem("token", token);
@@ -119,9 +115,6 @@ export default {
         },
         userClassrooms(state) {
             return state.classrooms;
-        },
-        userMeetings(state) {
-            return state.meetings;
         }
     },
 };

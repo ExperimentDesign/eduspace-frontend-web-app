@@ -4,7 +4,7 @@
 [![PrimeVue](https://img.shields.io/badge/PrimeVue-4.x-41B883)](https://primevue.org/)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-EduSpace is a comprehensive educational space management system built with Vue 3. It provides a complete solution for managing classrooms, shared spaces, resources, reservations, meetings, and breakdown reports for educational institutions.
+EduSpace is a comprehensive educational space management system built with Vue 3. It provides a complete solution for managing classrooms, shared spaces, resources, reservations, and breakdown reports for educational institutions.
 
 ## ✨ Features
 
@@ -14,17 +14,15 @@ EduSpace is a comprehensive educational space management system built with Vue 3
 - **Classroom Management**: Create, update, and manage classrooms with resource tracking
 - **Shared Spaces**: Manage common areas and facilities
 - **Resource Allocation**: Track and manage classroom resources and equipment
-- **Meeting Coordination**: Schedule and organize meetings with multiple teachers
 - **Teacher Management**: Register and manage teacher profiles with enhanced forms
 - **Reports Overview**: Monitor and manage facility breakdown reports
 
 ### For Teachers (RoleTeacher)
 
-- **Personal Dashboard**: Enhanced view of assigned classrooms and upcoming meetings
+- **Personal Dashboard**: Enhanced view of assigned classrooms and active reservations
 - **Reservation System**: Book shared spaces with interactive calendar and validation
 - **Weekly Calendar**: Visual calendar with drag-and-drop reservation management
 - **Breakdown Reports**: Submit and track facility maintenance requests
-- **Meeting Participation**: View and participate in scheduled meetings
 - **Profile Management**: Update personal information and contact details
 
 ## 🚀 Quick Start
@@ -104,13 +102,6 @@ eduspace-frontend-web-app/
 │   │   │   ├── create-reservation-dialog.vue
 │   │   │   ├── reservation-toolbar.component.vue
 │   │   │   └── weekly-calendar.component.vue
-│   │   ├── model/
-│   │   ├── pages/
-│   │   └── services/
-│   ├── meeting-management/                     # Meeting Management
-│   │   ├── components/
-│   │   │   ├── meet-create-and-edit.component.vue
-│   │   │   └── meeting-card.vue
 │   │   ├── model/
 │   │   ├── pages/
 │   │   └── services/
@@ -349,14 +340,6 @@ if (userRole === "RoleAdmin") {
 - Drag-and-drop reservation creation
 - Duration limits and time slot management
 - Real-time availability checking
-
-### Meeting Management
-
-- Meeting scheduling with flexible teacher invitations
-- Multiple teacher participation support
-- Classroom allocation
-- Enhanced data handling for date/time conversion
-- Support for both legacy and new data formats
 
 ### Breakdown Report Management
 

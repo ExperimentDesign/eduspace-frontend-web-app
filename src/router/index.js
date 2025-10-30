@@ -8,7 +8,6 @@ import RegisterComponent from '../iam/register/pages/register.component.vue';
 import VerifyCodeComponent from "../iam/login/components/verify-code.component.vue";
 
 // Componentes de Contextos de Dominio
-import MeetManagementComponent from "../meeting-management/pages/meet-management.component.vue";
 import ReservationManagementComponent from "../reservation-management/pages/reservation-management.component.vue";
 import ClassroomManagementComponent from "../breakdown-report-management/pages/classroom-management.component.vue";
 import ResourceManagementComponent from "../breakdown-report-management/pages/resource-management.component.vue";
@@ -18,7 +17,6 @@ import ReportsManagementComponent from "../breakdown-report-management/pages/rep
 // Componentes del Dashboard de Administrador
 import HomeAdminComponent from "../dashboard-admin/pages/home-admin.component.vue";
 import PersonalDataComponent from "../dashboard-admin/pages/personal-data.component.vue";
-import ClassroomChangesMeetingsComponent from "../dashboard-admin/pages/classroom-changes-meetings.component.vue";
 import ClassroomsSharedSpacesComponent from "../dashboard-admin/pages/classrooms-shared-spaces.component.vue";
 import AddClassroomsComponent from "../classroom-space-resource-management/pages/classrooms/add-classrooms.component.vue";
 import ClassroomsComponent from "../classroom-space-resource-management/pages/classrooms/classrooms.component.vue";
@@ -50,8 +48,6 @@ const router = createRouter({
         { path: '/dashboard-admin', redirect: '/dashboard-admin/home-admin' },
         { path: '/dashboard-admin/home-admin', name: 'home-admin', component: HomeAdminComponent, meta: { title: 'Home Admin' } },
         { path: '/dashboard-admin/personal-data', name: 'personal-data', component: PersonalDataComponent, meta: { title: 'Personal Data' } },
-        { path: '/dashboard-admin/classroom-changes-meetings', name: 'classroom-changes-meetings', component: ClassroomChangesMeetingsComponent, meta: { title: 'Classroom Changes & Meetings' } },
-        { path: '/dashboard-admin/classroom-changes-meetings/meeting-management', name: 'meet-management', component: MeetManagementComponent, meta: { title: 'Meeting Management' } },
         { path: '/dashboard-admin/classrooms-shared-spaces', name: 'classrooms-shared-spaces', component: ClassroomsSharedSpacesComponent, meta: { title: 'Classrooms & Shared Spaces' } },
         { path: '/dashboard-admin/classrooms-shared-spaces/classrooms', name: 'admin-classrooms', component: ClassroomsComponent, meta: { title: 'Manage Classrooms' } },
         { path: '/dashboard-admin/classrooms-shared-spaces/classrooms/add', name: 'add-classrooms', component: AddClassroomsComponent, meta: { title: 'Add Classroom' } },

@@ -84,50 +84,6 @@
         </div>
       </template>
     </pv-card>
-
-    <pv-card class="meetings-card scrollable-card">
-      <template #header>
-        <div class="card-header-content">
-          <i class="pi pi-users header-icon"></i>
-          <h3 class="card-title">My Meetings</h3>
-        </div>
-      </template>
-      <template #content>
-        <div v-if="meetings.length">
-          <div class="cards-grid">
-            <div
-                v-for="(meeting, index) in meetings"
-                :key="`meeting-${index}`"
-                class="meeting-item-card"
-            >
-              <div class="item-header">
-                <i class="pi pi-calendar"></i>
-                <h4>{{ meeting.title || "No title" }}</h4>
-              </div>
-              <div class="meeting-info">
-                <div class="info-row">
-                  <i class="pi pi-building"></i>
-                  <span>{{ formatClassroom(meeting.classroom) }}</span>
-                </div>
-                <div class="info-row">
-                  <i class="pi pi-calendar"></i>
-                  <span>{{ formatDate(meeting.date || meeting.day) }}</span>
-                </div>
-                <div class="info-row">
-                  <i class="pi pi-clock"></i>
-                  <span>{{ meeting.start || "N/A" }} - {{ meeting.end || "N/A" }}</span>
-                </div>
-              </div>
-              <p v-if="meeting.description" class="item-description">{{ meeting.description }}</p>
-            </div>
-          </div>
-        </div>
-        <div v-else class="empty-state">
-          <i class="pi pi-users empty-icon"></i>
-          <p>No meetings scheduled.</p>
-        </div>
-      </template>
-    </pv-card>
   </div>
 </template>
 
@@ -135,7 +91,6 @@
 import { mapGetters } from "vuex";
 import http from "../../shared/services/http-common.js";
 import { ReservationService } from "../../reservation-management/services/reservation.service.js";
-import { MeetService } from "../../meeting-management/services/meet.service.js";
 import {ClassroomService} from "../../shared/services/classroom.service.js";
 
 export default {
@@ -145,9 +100,7 @@ export default {
       teacher: null,
       classroomReservations: [],
       sharedAreaReservations: [],
-      meetings: [],
       reservationService: new ReservationService(),
-      meetService: new MeetService(),
       classroomService: new ClassroomService(),
     };
   },
@@ -242,14 +195,6 @@ export default {
         };
       });
 
-      const meetResponse = await http.get(`/teachers/${this.userId}/meetings`);
-      this.meetings = meetResponse.data.map(meeting => ({
-        ...meeting,
-        // Ensure date/day is properly set
-        date: meeting.date || meeting.day,
-        day: meeting.day || meeting.date
-      }));
-
       console.log("Teacher Dashboard loaded successfully");
 
     } catch (error) {
@@ -262,13 +207,13 @@ export default {
 <style scoped>
 .dashboard-layout {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 20px;
   padding: 20px;
 }
 
 .teacher-info {
-  grid-column: span 3;
+  grid-column: span 2;
   background: linear-gradient(135deg, rgba(255, 210, 0, 0.4) 0%, rgba(255, 223, 77, 0.3) 100%);
   padding: 25px;
   border-radius: 20px;
@@ -319,10 +264,6 @@ export default {
   background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
 }
 
-.meetings-card {
-  background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
-}
-
 .card-header-content {
   display: flex;
   align-items: center;
@@ -349,10 +290,6 @@ export default {
 
 .reservations-card .header-icon {
   color: #388E3C !important;
-}
-
-.meetings-card .header-icon {
-  color: #7B1FA2 !important;
 }
 
 .card-title {
@@ -414,98 +351,6 @@ export default {
   color: #555;
   margin: 0;
   line-height: 1.4;
-}
-
-/* Meeting Item Card */
-.meeting-item-card {
-  background: white;
-  border-radius: 12px;
-  padding: 16px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
-  transition: transform 0.12s ease, box-shadow 0.12s ease;
-}
-
-.meeting-item-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 6px 14px rgba(0,0,0,0.12);
-}
-
-.meeting-item-card .item-header i {
-  color: #7B1FA2 !important;
-  position: relative;
-  z-index: 2;
-  backface-visibility: hidden;
-  transform: translateZ(0);
-  flex-shrink: 0;
-}
-
-.meeting-item-card .item-header h4 {
-  color: #4a148c;
-}
-
-.meeting-info {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  margin: 12px 0;
-}
-
-.info-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 13px;
-  color: #333;
-}
-
-.info-row i {
-  color: #7B1FA2 !important;
-  font-size: 14px;
-  min-width: 16px;
-  position: relative;
-  z-index: 2;
-  backface-visibility: hidden;
-  transform: translateZ(0);
-  flex-shrink: 0;
-}
-
-/* Reservations List */
-.reservations-list {
-  list-style: none;
-  padding: 16px;
-  margin: 0;
-}
-
-.reservation-item {
-  padding: 16px;
-  background: white;
-  border-radius: 12px;
-  margin-bottom: 12px;
-}
-
-.reservation-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px 0;
-}
-
-.reservation-label {
-  font-weight: 600;
-  color: #555;
-  font-size: 14px;
-}
-
-.reservation-value {
-  color: #333;
-  font-size: 14px;
-  text-align: right;
-}
-
-.reservation-divider {
-  border: none;
-  border-top: 1px solid #e0e0e0;
-  margin: 12px 0;
 }
 
 .empty-state {

@@ -65,7 +65,6 @@
 <script>
 import { mapGetters, mapActions } from "vuex";
 import HomeIcon from "/src/assets/admin/Home.svg";
-import ClassroomIcon from "/src/assets/admin/Clasroom.svg";
 import EnvironmentIcon from "/src/assets/admin/Environment.svg";
 import PersonalDIcon from "/src/assets/admin/Personal_Data.svg";
 import BreakdownIcon from "/src/assets/teacher/Breakdown_Reports.svg";
@@ -96,7 +95,6 @@ export default {
         this.items = [
           { label: "Home", to: "/dashboard-admin/home-admin", svg: HomeIcon },
           { label: "Classrooms and Shared Spaces", to: "/dashboard-admin/classrooms-shared-spaces", svg: EnvironmentIcon },
-          {label: 'Classroom Changes and Meetings', to: '/dashboard-admin/classroom-changes-meetings', svg: ClassroomIcon},
           { label: "Personal Data", to: "/dashboard-admin/personal-data", svg: PersonalDIcon },
         ];
       } else if (this.userRole === "RoleTeacher") {
