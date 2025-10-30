@@ -10,7 +10,11 @@
       <!-- Compact summary similar to MeetingCard compact -->
       <div v-if="compact" class="teacher-compact">
         <div class="compact-left">
-          <pv-avatar :label="initials" size="large" style="background-color:#3b82f6;color:white;" />
+          <pv-avatar
+            :label="initials"
+            size="large"
+            style="background-color: #3b82f6; color: white"
+          />
         </div>
         <div class="compact-center">
           <div class="compact-name">{{ fullName }}</div>
@@ -56,25 +60,11 @@
     <template #footer v-if="!compact">
       <div class="card-actions">
         <pv-button
-            icon="pi pi-eye"
-            label="View"
-            severity="info"
-            size="small"
-            @click="$emit('view', teacher.id)"
-        />
-        <pv-button
-            icon="pi pi-pencil"
-            label="Edit"
-            severity="warning"
-            size="small"
-            @click="$emit('edit', teacher.id)"
-        />
-        <pv-button
-            icon="pi pi-trash"
-            label="Delete"
-            severity="danger"
-            size="small"
-            @click="$emit('delete', teacher.id)"
+          icon="pi pi-eye"
+          label="View"
+          severity="info"
+          size="small"
+          @click="$emit('view', teacher.id)"
         />
       </div>
     </template>
@@ -83,19 +73,25 @@
 
 <script>
 export default {
-  name: 'teacher-card',
+  name: "teacher-card",
   props: {
     teacher: {
       type: Object,
       required: true,
       validator(value) {
-        return value.firstName && value.lastName && value.email && value.dni && value.phone;
-      }
-    }
-    , compact: {
+        return (
+          value.firstName &&
+          value.lastName &&
+          value.email &&
+          value.dni &&
+          value.phone
+        );
+      },
+    },
+    compact: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
   computed: {
     fullName() {
@@ -103,7 +99,7 @@ export default {
     },
     maskedEmail() {
       const email = this.teacher.email;
-      const [localPart, domain] = email.split('@');
+      const [localPart, domain] = email.split("@");
       if (localPart.length <= 3) {
         return `${localPart}***@${domain}`;
       }
@@ -111,15 +107,15 @@ export default {
     },
     formattedPhone() {
       const phone = this.teacher.phone;
-      return phone.replace(/(\d{3})(\d{3})(\d{3})/, '$1 $2 $3');
+      return phone.replace(/(\d{3})(\d{3})(\d{3})/, "$1 $2 $3");
     },
     initials() {
-      const fn = this.teacher.firstName || '';
-      const ln = this.teacher.lastName || '';
-      return (fn[0] || '') + (ln[0] || '');
-    }
-  }
-}
+      const fn = this.teacher.firstName || "";
+      const ln = this.teacher.lastName || "";
+      return (fn[0] || "") + (ln[0] || "");
+    },
+  },
+};
 </script>
 
 <style scoped>
@@ -203,12 +199,31 @@ export default {
 }
 
 /* Compact view styles */
-.teacher-compact { display:flex; align-items:center; gap:12px; padding:8px 4px; }
-.compact-left { flex: 0 0 auto; }
-.compact-center { flex: 1 1 auto; }
-.compact-name { font-weight:600; }
-.compact-email { font-size:0.85rem; color:#6c757d; }
-.compact-right { flex: 0 0 auto; text-align:right; font-size:0.9rem; color:#2c3e50; }
+.teacher-compact {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 4px;
+}
+.compact-left {
+  flex: 0 0 auto;
+}
+.compact-center {
+  flex: 1 1 auto;
+}
+.compact-name {
+  font-weight: 600;
+}
+.compact-email {
+  font-size: 0.85rem;
+  color: #6c757d;
+}
+.compact-right {
+  flex: 0 0 auto;
+  text-align: right;
+  font-size: 0.9rem;
+  color: #2c3e50;
+}
 
 @media (max-width: 768px) {
   .card-actions button {
