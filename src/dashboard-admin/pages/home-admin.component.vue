@@ -3,7 +3,7 @@ import { mapGetters } from "vuex";
 import TeacherCardComponent from "../../personal-data/components/teacher-card.component.vue";
 import { TeacherService } from "../../personal-data/services/teacher.service.js";
 import http from "../../shared/services/http-common.js";
-import {ClassroomService} from "../../shared/services/classroom.service.js";
+import { ClassroomService } from "../../shared/services/classroom.service.js";
 
 export default {
   name: "AdminDashboard",
@@ -32,7 +32,9 @@ export default {
       if (!this.userId) return;
 
       const adminResponse = await http.get("/administrator-profiles");
-      this.admin = adminResponse.data.find((a) => Number(a.id) === Number(this.userId));
+      this.admin = adminResponse.data.find(
+        (a) => Number(a.id) === Number(this.userId)
+      );
       if (!this.admin) {
         return;
       }
@@ -50,10 +52,31 @@ export default {
 
   methods: {
     notifySuccessfulAction(message) {
-      if (this.$toast) this.$toast.add({ severity: 'success', summary: 'Success', detail: message, life: 3000 });
+      if (this.$toast)
+        this.$toast.add({
+          severity: "success",
+          summary: "Success",
+          detail: message,
+          life: 3000,
+        });
     },
     notifyErrorAction(message) {
-      if (this.$toast) this.$toast.add({ severity: 'error', summary: 'Error', detail: message, life: 3000 });
+      if (this.$toast)
+        this.$toast.add({
+          severity: "error",
+          summary: "Error",
+          detail: message,
+          life: 3000,
+        });
+    },
+    formatDate(dateString) {
+      if (!dateString) return "N/A";
+      const date = new Date(dateString);
+      return date.toLocaleDateString("es-ES", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+      });
     },
   },
 };
@@ -64,15 +87,19 @@ export default {
     <div class="admin-info">
       <div class="admin-avatar">
         <pv-avatar
-            :label="initials || 'NA'"
-            size="xlarge"
-            style="background-color: #2196F3; color: white; font-size: 30px;"
+          :label="initials || 'NA'"
+          size="xlarge"
+          style="background-color: #2196f3; color: white; font-size: 30px"
         ></pv-avatar>
       </div>
       <div class="admin-details">
         <p><strong>Name:</strong> {{ admin?.firstName || "Not available" }}</p>
-        <p><strong>Last Name:</strong> {{ admin?.lastName || "Not available" }}</p>
-        <p><strong>Cell Phone:</strong> {{ admin?.phone || "Not available" }}</p>
+        <p>
+          <strong>Last Name:</strong> {{ admin?.lastName || "Not available" }}
+        </p>
+        <p>
+          <strong>Cell Phone:</strong> {{ admin?.phone || "Not available" }}
+        </p>
         <p><strong>Status:</strong> Admin</p>
         <p><strong>Email:</strong> {{ admin?.email || "Not available" }}</p>
       </div>
@@ -88,10 +115,10 @@ export default {
       <template #content>
         <div v-if="teachers.length" class="teacher-list">
           <TeacherCardComponent
-              v-for="teacher in teachers"
-              :key="teacher.id"
-              :teacher="teacher"
-              :compact="true"
+            v-for="teacher in teachers"
+            :key="teacher.id"
+            :teacher="teacher"
+            :compact="true"
           />
         </div>
         <div v-else class="empty-state">
@@ -111,10 +138,14 @@ export default {
       <template #content>
         <div v-if="reports.length">
           <ul class="reports-list">
-            <li v-for="(report, index) in reports" :key="index" class="report-item">
+            <li
+              v-for="(report, index) in reports"
+              :key="index"
+              class="report-item"
+            >
               <div class="report-row">
                 <span class="report-label">Type:</span>
-                <span class="report-value">{{ report.kind_of_report }}</span>
+                <span class="report-value">{{ report.kindOfReport }}</span>
               </div>
               <div class="report-row">
                 <span class="report-label">Description:</span>
@@ -126,11 +157,16 @@ export default {
               </div>
               <div class="report-row">
                 <span class="report-label">Created At:</span>
-                <span class="report-value">{{ report.created_at }}</span>
+                <span class="report-value">{{
+                  formatDate(report.createdAt)
+                }}</span>
               </div>
               <div class="report-row">
                 <span class="report-label">Status:</span>
-                <span class="report-value" :class="'status-' + report.status.toLowerCase()">
+                <span
+                  class="report-value"
+                  :class="'status-' + report.status.toLowerCase()"
+                >
                   {{ report.status }}
                 </span>
               </div>
@@ -157,7 +193,11 @@ export default {
 
 .admin-info {
   grid-column: span 2;
-  background: linear-gradient(135deg, rgba(255, 210, 0, 0.4) 0%, rgba(255, 223, 77, 0.3) 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(255, 210, 0, 0.4) 0%,
+    rgba(255, 223, 77, 0.3) 100%
+  );
   padding: 25px;
   border-radius: 20px;
   display: grid;
@@ -220,7 +260,7 @@ export default {
 
 .header-icon {
   font-size: 24px;
-  color: #2196F3;
+  color: #2196f3;
   position: relative;
   z-index: 2;
   backface-visibility: hidden;
@@ -228,12 +268,11 @@ export default {
 }
 
 .teachers-card .header-icon {
-  color: #1976D2 !important;
+  color: #1976d2 !important;
 }
 
-
 .reports-card .header-icon {
-  color: #7B1FA2 !important;
+  color: #7b1fa2 !important;
 }
 
 .card-title {
