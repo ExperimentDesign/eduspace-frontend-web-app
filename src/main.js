@@ -1,7 +1,6 @@
 import {createApp} from 'vue'
 import './style.css'
 import App from './app.vue'
-import i18n from "./i18n.js";
 
 // PrimeVue
 import PrimeVue from 'primevue/config';
@@ -60,10 +59,6 @@ const app = createApp(App);
 
 //user vuex
 app.use(store);
-
-// Use i18n
-
-app.use(i18n);
 
 // Use Router
 
