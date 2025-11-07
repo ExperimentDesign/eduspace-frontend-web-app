@@ -2,7 +2,6 @@
 
 [![Vue.js](https://img.shields.io/badge/Vue.js-3.x-4FC08D?logo=vue.js)](https://vuejs.org/)
 [![PrimeVue](https://img.shields.io/badge/PrimeVue-4.x-41B883)](https://primevue.org/)
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 EduSpace is a comprehensive educational space management system built with Vue 3. It provides a complete solution for managing classrooms, shared spaces, resources, reservations, and breakdown reports for educational institutions.
 
@@ -126,17 +125,15 @@ eduspace-frontend-web-app/
 │   │       └── user.js
 │   ├── router/                                 # Vue Router Configuration
 │   │   └── index.js
-│   ├── locales/                                # Internationalization
-│   │   ├── en.json
-│   │   └── es.json
 │   ├── App.vue                                 # Root Component
 │   ├── main.js                                 # Application Entry Point
-│   └── i18n.js                                 # i18n Configuration
+│   └── style.css                               # Global Styles
 ├── public/                                     # Static Assets
 ├── .env                                        # Environment Variables
+├── .gitignore                                  # Git Ignore Rules
 ├── package.json                                # Dependencies
 ├── vite.config.js                              # Vite Configuration
-└── README.md                                   # Documentation
+└── README.md                                   # Project Documentation
 ```
 
 ## 🏗️ Architecture
@@ -153,10 +150,9 @@ EduSpace follows a domain-driven design pattern with modules organized by busine
 ### Key Technologies
 
 - **Vue 3**: Progressive JavaScript framework with Composition API
-- **PrimeVue 4**: Rich UI component library
+- **PrimeVue 4**: Rich UI component library (Aura theme)
 - **Vuex**: Centralized state management
 - **Vue Router**: Official router for Vue.js
-- **Vue I18n**: Internationalization plugin
 - **FullCalendar**: Calendar integration for reservations
 - **Axios**: HTTP client for API communication
 - **Vite**: Next-generation frontend tooling
@@ -267,25 +263,6 @@ this.$toast.add({
 });
 ```
 
-## 🌍 Internationalization
-
-### Available Languages
-
-- English (en)
-- Spanish (es)
-
-### Default Language
-
-English
-
-### Usage in Templates
-
-```vue
-<template>
-  <p>{{ $t("key") }}</p>
-</template>
-```
-
 ## 🛠️ Development Guidelines
 
 ### Adding New Routes
@@ -368,18 +345,6 @@ if (userRole === "RoleAdmin") {
 - Automatic token refresh handling
 - Secure HTTPS communication
 - Automatic logout on token expiration
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes using Conventional Commits (`git commit -m 'feat: add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
 
 ### Commit Convention
 
