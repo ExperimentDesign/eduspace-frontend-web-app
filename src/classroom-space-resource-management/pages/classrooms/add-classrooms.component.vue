@@ -52,7 +52,7 @@ export default {
                 try {
                   const vals = Object.values(d.errors).flat().filter(Boolean);
                   if (vals.length) return vals.join(', ');
-                } catch(e) {
+                } catch {
                   // fallthrough
                 }
               }
@@ -60,7 +60,7 @@ export default {
             try {
               const s = JSON.stringify(d);
               if (s && s !== '{}') return s;
-            } catch(e) {
+            } catch {
               // ignore
             }
           }
