@@ -3,11 +3,11 @@
 [![Vue.js](https://img.shields.io/badge/Vue.js-3.x-4FC08D?logo=vue.js)](https://vuejs.org/)
 [![PrimeVue](https://img.shields.io/badge/PrimeVue-4.x-41B883)](https://primevue.org/)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Production](https://img.shields.io/badge/status-production-green)](https://eduspace-frontend-six.vercel.app/)
+[![Production](https://img.shields.io/badge/status-production-green)](https://eduspace-frontend-web-app-production.up.railway.app/)
 
 EduSpace is a comprehensive educational space management system built with Vue 3. This web application provides robust capabilities for managing classrooms, shared spaces, resources, reservations, meetings, and breakdown reports for educational institutions.
 
-> **Deployment**: This application is deployed in production at [https://eduspace-frontend-six.vercel.app/](https://eduspace-frontend-six.vercel.app/)
+> **Deployment**: This application is deployed in production at [https://eduspace-frontend-web-app-production.up.railway.app/](https://eduspace-frontend-web-app-production.up.railway.app/)
 
 ## Features
 ### For Administrators (RoleAdmin)
@@ -393,9 +393,9 @@ This is part of the EduSpace ecosystem:
 ## Deployment
 
 ### Production Environment
-- **Frontend URL**: https://eduspace-frontend-six.vercel.app/
+- **Frontend URL**: https://eduspace-frontend-web-app-production.up.railway.app/
 - **Backend API URL**: https://eduspace-platform-production.up.railway.app/api/v1
-- **Platform**: Vercel (Frontend), Railway (Backend)
+- **Platform**: Railway (Frontend & Backend)
 
 ### Development Environment
 - **Frontend**: http://localhost:5173
