@@ -62,6 +62,21 @@
         </div>
 
         <div class="footer-section">
+          <div class="complaints-container">
+            <a
+              href="https://forms.gle/1EKpnBs76HGt1dct6"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="complaints-link"
+            >
+              <img
+                :src="LibroReclamaciones"
+                alt="Libro de Reclamaciones"
+                class="complaints-icon"
+              />
+              <span>Libro de Reclamaciones</span>
+            </a>
+          </div>
           <div class="logout-container">
             <pv-button
               class="pv-button log-out logout-hover"
@@ -113,6 +128,7 @@ import BreakdownIcon from "./assets/teacher/Breakdown_Reports.svg";
 import NotificationIcon from "./assets/teacher/Notification.svg";
 import DefaultAvatar from "./assets/default-avatar.png";
 import LogoSidebar from "./assets/Logo sidebar.png";
+import LibroReclamaciones from "./assets/libro-de-reclamaciones.png";
 
 export default {
   name: "app",
@@ -122,6 +138,7 @@ export default {
       items: [],
       DefaultAvatar,
       LogoSidebar,
+      LibroReclamaciones,
     };
   },
   computed: {
@@ -302,6 +319,36 @@ export default {
   width: 100%;
 }
 
+.complaints-container {
+  width: 100%;
+  margin-bottom: 10px;
+  padding-left: 0;
+}
+
+.complaints-link {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  color: #000;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 1rem;
+  padding: 0.5rem 0.7rem;
+  transition: color 0.2s ease-in-out, background-color 0.2s ease-in-out;
+  border-radius: 6px;
+}
+
+.complaints-link:hover {
+  color: #535bf2;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+.complaints-icon {
+  width: 30px;
+  height: 30px;
+  margin-right: 8px;
+}
+
 .logout-container {
   width: 100%;
   display: flex;
@@ -375,6 +422,19 @@ export default {
 
   .main-content {
     margin-left: 0;
+  }
+
+  .complaints-link span {
+    display: none;
+  }
+
+  .complaints-link {
+    justify-content: center;
+    padding: 0.5rem;
+  }
+
+  .complaints-icon {
+    margin-right: 0;
   }
 }
 
